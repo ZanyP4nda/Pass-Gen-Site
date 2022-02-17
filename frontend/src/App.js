@@ -23,13 +23,17 @@ class App extends React.Component {
         }
     }    
 
+	// Calls when password is clicked
     passwordClick = (e) => {
         e.preventDefault();
         if(this.state.isShowPassword)
+			// Copy password to clipboard
             navigator.clipboard.writeText(this.state.password);
     }
 
-    updateData = (index, newData) => {
+	// Called when button is clicked
+	// Changes button toggle data in state
+    updateButtonData = (index, newData) => {
         let tempData = this.state.buttonsData;
         tempData[index] = newData;
         this.setState({ buttonsData : tempData }, () => {
@@ -37,45 +41,72 @@ class App extends React.Component {
         });
     }
 
+	// Called when password length input field is updated
     updatePassLength = (newLength) => {
         this.setState({passLength: newLength});
     }
 
-    generatePass = () => {
-        let password = ""
+	// Get possible characters for password
+	getPossibleCharacters = () => {
+		// Start password with lowercase letters
         let possibleChars = LOWERCASE;
-        let possibleLength = 26;
+		// If selected, add uppercase letters
         if(this.state.buttonsData[0][2]) {
             possibleChars += UPPERCASE;
-            possibleLength += 26;
         }
+		// If selected, add numbers
         if(this.state.buttonsData[1][2]) {
             possibleChars += NUMBERS;
-            possibleLength += 10;
         }
+		// If selected, add symbols
         if(this.state.buttonsData[2][2]) {
             possibleChars += SYMBOLS;
-            possibleLength += SYMBOLS.length;
         }
+
+		return possibleChars;
+	}
+	// Generate password
+    generatePass = () => {
+        let password = ""
+		// Get possible characters
+		let possibleChars = this.getPossibleCharacters();
+		// Get length of possible characters
+		let possibleLength = possibleChars.length;
+
+		// For no. of characters in password, generate a random character from array of possibleChars
         for (let i = 0; i < this.state.passLength; i++) {
             password += possibleChars[Math.floor(Math.random() * possibleLength)]
         }
+
+		return password;
+	}
+
+	// Update password
+	updatePassword = () => {
+		// Generate password
+		let password = this.generatePass();
+		// Update state
         this.setState({password : password}, () => {
+			// If option selected, show password on screen
             if(this.state.buttonsData[3][2]) {
                 this.setState({ isShowPassword : true });
             }
+			// If not, copy password to clipboard
             else {
                 this.setState({ isShowPassword : false }, () => {
                     navigator.clipboard.writeText(this.state.password);
                 });
             }
         });
-    }
+	}
 
+	// Called on submit btn press
     handleSubmit = (e) => {
         e.preventDefault();
-        if(this.state.passLength >= 8 || this.state.passLength <= 20) {
-            this.generatePass();
+		// If password length specified is inside range
+        if(parseInt(this.state.passLength) >= 8 && parseInt(this.state.passLength) <= 20) {
+			// Give password
+			this.updatePassword();
         }
     }
 
@@ -88,7 +119,7 @@ class App extends React.Component {
                 <div className="options-container-container">
                     <div className="options-container">
                         <PassLengthInput label="Password Length" value={this.state.passLength} updatePassLength={this.updatePassLength.bind(this)} />
-                        <RadioGroup buttonsData={this.state.buttonsData} updateData={this.updateData.bind(this)} />
+                        <RadioGroup buttonsData={this.state.buttonsData} updateButtonData={this.updateButtonData.bind(this)} />
                         <button className="submit-btn" onClick={this.handleSubmit}>Generate</button>
                     </div>
                 </div>
