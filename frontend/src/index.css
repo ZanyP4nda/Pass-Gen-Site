@@ -93,7 +93,7 @@ input[type=number] {
     height: 25px;
     border: solid rgba(255, 255, 255, 0.445);
     border-radius: 2px;
-    background-color:rgba(255, 255, 255, 0.8);
+    background-color:rgba(255, 255, 255, 1);
     transition-duration: 0.2s;
 }
 
